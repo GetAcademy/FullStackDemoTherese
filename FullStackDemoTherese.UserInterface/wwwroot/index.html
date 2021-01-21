@@ -1,0 +1,64 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+    <div id="app"></div>
+
+
+
+    <script>
+        const model = {
+            inputs: {
+                homeTeam: '',
+                awayTeam: '',
+                homeGoals: 0,
+                awayGoals: 0,
+            },
+        };
+
+        updateView();
+        function updateView() {
+            document.getElementById('app').innerHTML = `
+
+                <h3>Nytt resultat:</h3>
+                Hjemmelag: <br/>
+                <input type="text" oninput="model.inputs.homeTeam = this.value" /><br/>
+                Bortelag: <br/>
+                <input type="text" oninput="model.inputs.awayTeam = this.value" /><br/>
+                Hjemmemål: <br/>
+                <input type="text" oninput="model.inputs.homeGoals= this.value" /><br/>
+                Bortemål: <br/>
+                <input type="text" oninput="model.inputs.awayGoals = this.value" /><br/>
+                <button onclick="addResult()">Legg til</button>
+
+                `;
+        }
+
+        async function addResult() {
+            const paramObj = {
+                homeTeam: model.inputs.homeTeam,
+                awayTeam: model.inputs.awayTeam,
+                homeGoals: parseInt(model.inputs.homeGoals),
+                awayGoals: parseInt(model.inputs.awayGoals),
+            };
+            const response = await axios.post('/api/matchResult', paramObj);
+            await getData();
+        }
+
+        getData();
+
+        async function getData() {
+            const response = await axios.get('/api/leagueTable');
+            const data = response.data;
+            console.table(data);
+            updateView();
+        }
+
+    </script>
+</body>
+</html>
